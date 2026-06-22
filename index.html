@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A Small Question</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1B14;
+    --bg-deep: #0A140F;
+    --cream: #F3EEE2;
+    --cream-dim: #C9C3B3;
+    --pink: #C73E7C;
+    --amber: #E8A33D;
+    --leaf: #3D6B4A;
+    --leaf-dim: #244531;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(ellipse 120% 80% at 50% 0%, var(--leaf-dim) 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  h1, h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    line-height: 1.15;
+    margin: 0 0 14px 0;
+    letter-spacing: -0.01em;
+  }
+
+  h1 { font-size: clamp(32px, 6vw, 48px); }
+  h2 { font-size: clamp(26px, 5vw, 36px); }
+
+  p.lead {
+    font-size: 17px;
+    color: var(--cream-dim);
+    line-height: 1.6;
+    max-width: 440px;
+    margin: 0 auto 36px auto;
+  }
+
+  /* Growth indicator: bud -> opening -> bloom */
+  .growth {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .growth-stage {
+    width: 30px;
+    height: 30px;
+    opacity: 0.3;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .growth-stage.active { opacity: 1; transform: scale(1.15); }
+  .growth-stage svg { width: 100%; height: 100%; }
+
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 16px 36px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--pink), #a82e63);
+    color: var(--cream);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 8px 24px rgba(199, 62, 124, 0.25);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(199, 62, 124, 0.35); }
+  .btn:active { transform: translateY(0); }
+  .btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1.5px solid rgba(243,238,226,0.25);
+    box-shadow: none;
+  }
+  .btn-secondary:hover { border-color: var(--amber); box-shadow: none; }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .option-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 18px 24px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(243,238,226,0.15);
+    background: rgba(255,255,255,0.03);
+    color: var(--cream);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s ease;
+  }
+  .option-btn:hover {
+    border-color: var(--pink);
+    background: rgba(199,62,124,0.08);
+    transform: translateX(4px);
+  }
+  .option-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .screen {
+    display: none;
+  }
+  .screen.visible {
+    display: flex;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .flower-hero {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 28px auto;
+  }
+
+  .result-photo {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 20px;
+    margin: 28px auto;
+    display: block;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(243,238,226,0.1);
+  }
+
+  .footnote {
+    font-size: 13px;
+    color: var(--cream-dim);
+    opacity: 0.6;
+    margin-top: 28px;
+  }
+
+  .loading-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    margin: 0 2px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  .petals-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<div class="petals-bg" id="petalsBg"></div>
+
+<!-- SCREEN 0: Intro -->
+<div class="stage screen visible" id="screen-0">
+  <div class="card">
+    <div class="flower-hero">
+      <svg viewBox="0 0 100 100" id="heroFlower">
+        <g id="budGroup">
+          <ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/>
+          <ellipse cx="50" cy="38" rx="13" ry="18" fill="#C73E7C"/>
+        </g>
+      </svg>
+    </div>
+    <div class="eyebrow">A small, very low-stakes survey</div>
+    <h1>Three quick questions.</h1>
+    <p class="lead">Nothing official. No grades. Just three things I'm curious about &mdash; answer honestly, it'll only take a minute.</p>
+    <button class="btn" id="startBtn">Let's begin</button>
+  </div>
+</div>
+
+<!-- SCREEN 1: Question 1 -->
+<div class="stage screen" id="screen-1">
+  <div class="card">
+    <div class="growth">
+      <div class="growth-stage active" id="g1-1"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="13" ry="18" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage" id="g1-2"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="16" ry="16" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage" id="g1-3"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><circle cx="50" cy="35" r="16" fill="#E8A33D"/></svg></div>
+    </div>
+    <div class="eyebrow">Question 1 of 3</div>
+    <h2>Be honest &mdash; am I being too much right now?</h2>
+    <p class="lead">A whole website for three questions is either charming or a lot. I'd genuinely like to know which.</p>
+    <div class="options">
+      <button class="option-btn" data-q="1" data-a="A">A little, but I'll allow it.</button>
+      <button class="option-btn" data-q="1" data-a="B">Not at all &mdash; I like the effort.</button>
+      <button class="option-btn" data-q="1" data-a="C">Ask me again after question 3.</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: Question 2 -->
+<div class="stage screen" id="screen-2">
+  <div class="card">
+    <div class="growth">
+      <div class="growth-stage" id="g2-1"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="13" ry="18" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage active" id="g2-2"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="16" ry="16" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage" id="g2-3"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><circle cx="50" cy="35" r="16" fill="#E8A33D"/></svg></div>
+    </div>
+    <div class="eyebrow">Question 2 of 3</div>
+    <h2>Do you think we'd get along, given the chance?</h2>
+    <p class="lead">No wrong answer here either. I'm just collecting data, as one does.</p>
+    <div class="options">
+      <button class="option-btn" data-q="2" data-a="A">Probably, yeah.</button>
+      <button class="option-btn" data-q="2" data-a="B">Hard to say &mdash; depends on you.</button>
+      <button class="option-btn" data-q="2" data-a="C">There's only one way to find out.</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Question 3 -->
+<div class="stage screen" id="screen-3">
+  <div class="card">
+    <div class="growth">
+      <div class="growth-stage" id="g3-1"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="13" ry="18" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage" id="g3-2"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="16" ry="16" fill="#C73E7C"/></svg></div>
+      <div class="growth-stage active" id="g3-3"><svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><circle cx="50" cy="35" r="16" fill="#E8A33D"/></svg></div>
+    </div>
+    <div class="eyebrow">Question 3 of 3 &mdash; the real one</div>
+    <h2>So &mdash; will you go on a date with me?</h2>
+    <p class="lead">This is the one that actually matters. Everything else was just warming up.</p>
+    <div class="options">
+      <button class="option-btn" data-q="3" data-a="yes">Yes, I'd like that.</button>
+      <button class="option-btn" data-q="3" data-a="no">Not right now.</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4a: Result - NO -->
+<div class="stage screen" id="screen-no">
+  <div class="card">
+    <div class="flower-hero">
+      <svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="9" ry="22" fill="#3D6B4A"/><ellipse cx="50" cy="38" rx="13" ry="18" fill="#C73E7C" opacity="0.6"/></svg>
+    </div>
+    <div class="eyebrow">Result</div>
+    <h2>That's okay. I already got you something anyway.</h2>
+    <p class="lead">No quiz required for that part &mdash; it was never really about the test. Thank you for humoring me with three questions, at least.</p>
+    <p class="footnote">If you change your mind, you know where to find me.</p>
+  </div>
+</div>
+
+<!-- SCREEN 4b: Result - YES -->
+<div class="stage screen" id="screen-yes">
+  <div class="card">
+    <div class="flower-hero" id="bloomHero">
+      <svg viewBox="0 0 100 100" id="bloomSvg">
+        <ellipse cx="50" cy="60" rx="8" ry="20" fill="#3D6B4A"/>
+        <g id="petalGroup" opacity="0">
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(0 50 40)"/>
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(60 50 40)"/>
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(120 50 40)"/>
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(180 50 40)"/>
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(240 50 40)"/>
+          <ellipse cx="50" cy="25" rx="9" ry="20" fill="#E8A33D" transform="rotate(300 50 40)"/>
+          <circle cx="50" cy="40" r="10" fill="#C73E7C"/>
+        </g>
+      </svg>
+    </div>
+    <div class="eyebrow">Result &mdash; it bloomed</div>
+    <h2>Excellent. As a small thank-you for taking the quiz, your gift is below.</h2>
+    <img src="gift.jpg" alt="Gift" class="result-photo" />
+    <p class="lead">I'll reach out separately with the details on getting it to you. Looking forward to the date.</p>
+  </div>
+</div>
+
+<!-- SCREEN: Sending -->
+<div class="stage screen" id="screen-sending">
+  <div class="card">
+    <p class="lead">Just a moment<span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></p>
+  </div>
+</div>
+
+<script>
+  const answers = { q1: null, q2: null, q3: null };
+
+  // ====== CONFIGURE NOTIFICATION HERE ======
+  const TELEGRAM_BOT_TOKEN = "8942226178:AAGCjjjyIJ6txxC5t9vjasMzirWMGczZM-g";
+  const TELEGRAM_CHAT_ID = "1471020506";
+  // ==========================================
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    showScreen('screen-1');
+  });
+
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q;
+      const a = btn.dataset.a;
+      const label = btn.textContent;
+      answers['q' + q] = label;
+
+      if (q === '1') {
+        showScreen('screen-2');
+      } else if (q === '2') {
+        showScreen('screen-3');
+      } else if (q === '3') {
+        showScreen('screen-sending');
+        sendNotification(a).finally(() => {
+          if (a === 'yes') {
+            showScreen('screen-yes');
+            triggerBloom();
+          } else {
+            showScreen('screen-no');
+          }
+        });
+      }
+    });
+  });
+
+  function triggerBloom() {
+    const petals = document.getElementById('petalGroup');
+    if (petals) {
+      petals.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+      petals.style.transform = 'scale(0.7)';
+      petals.style.transformOrigin = '50px 40px';
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          petals.style.opacity = '1';
+          petals.style.transform = 'scale(1)';
+        }, 100);
+      });
+    }
+  }
+
+  async function sendNotification(q3answer) {
+    const text =
+      "🌸 New quiz response!\n\n" +
+      "Q1 (too much?): " + (answers.q1 || "-") + "\n" +
+      "Q2 (get along?): " + (answers.q2 || "-") + "\n" +
+      "Q3 (the date): " + (answers.q3 || "-");
+
+    if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE") {
+      console.log("Telegram not configured. Would have sent:\n" + text);
+      return Promise.resolve();
+    }
+
+    try {
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+      });
+    } catch (e) {
+      console.error("Notification failed", e);
+    }
+  }
+
+  // subtle ambient floating petal shapes in background
+  (function initPetalsBg() {
+    const container = document.getElementById('petalsBg');
+    const colors = ['#C73E7C', '#E8A33D', '#3D6B4A'];
+    for (let i = 0; i < 8; i++) {
+      const el = document.createElement('div');
+      const size = 8 + Math.random() * 14;
+      const left = Math.random() * 100;
+      const dur = 18 + Math.random() * 14;
+      const delay = Math.random() * -20;
+      const color = colors[i % colors.length];
+      el.style.position = 'absolute';
+      el.style.left = left + 'vw';
+      el.style.top = '-5vh';
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.borderRadius = '50% 0 50% 50%';
+      el.style.background = color;
+      el.style.opacity = '0.12';
+      el.style.animation = `floatDown ${dur}s linear ${delay}s infinite`;
+      container.appendChild(el);
+    }
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `
+      @keyframes floatDown {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(110vh) rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleTag);
+  })();
+</script>
+
+</body>
+</html>
